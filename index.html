@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FinSight · Controle Financeiro Inteligente</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="bg-orbs" aria-hidden="true"><span></span><span></span><span></span></div>
+  <div class="grid-overlay" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo"><i data-lucide="trending-up"></i></div>
+      <span>Fin<b>Sight</b></span>
+    </div>
+    <div class="topbar-actions" id="topActions" hidden>
+      <select id="periodSelect" class="select" aria-label="Período"></select>
+      <button class="btn gold" id="reportBtn" title="Baixar relatório completo em PDF"><i data-lucide="file-text"></i><span>Relatório PDF</span></button>
+      <button class="btn ghost" id="exportBtn" title="Exportar CSV categorizado"><i data-lucide="download"></i><span>CSV</span></button>
+      <button class="btn ghost" id="newFileBtn"><i data-lucide="upload"></i><span>Novo extrato</span></button>
+    </div>
+  </header>
+
+  <main>
+    <!-- ============ UPLOAD ============ -->
+    <section id="uploadView" class="view active">
+      <div class="hero">
+        <span class="pill reveal"><i data-lucide="shield-check"></i> Seus dados nunca saem do seu navegador</span>
+        <h1 class="reveal" style="--i:1">Entenda para onde vai<br><span class="grad">cada real do seu dinheiro</span></h1>
+        <p class="reveal" style="--i:2">Importe o extrato do seu banco em CSV ou PDF. Categorizamos cada gasto automaticamente e mostramos, com números, onde dá para economizar.</p>
+      </div>
+
+      <label class="dropzone reveal" style="--i:3" id="dropzone">
+        <input type="file" id="fileInput" accept=".csv,.txt,.pdf,text/csv,application/pdf" multiple hidden>
+        <div class="dz-inner">
+          <div class="dz-icon"><i data-lucide="file-spreadsheet"></i></div>
+          <h3>Arraste seu extrato aqui</h3>
+          <p>ou <u>clique para escolher</u> · <b class="fmt">CSV</b> <b class="fmt">PDF</b> · Nubank, Inter, Itaú, Bradesco, BB, Caixa, Santander…</p>
+        </div>
+      </label>
+
+      <div class="hero-actions reveal" style="--i:4">
+        <button class="btn primary" id="sampleBtn"><i data-lucide="zap"></i> Ver com dados de exemplo</button>
+        <button class="btn ghost" id="downloadSampleBtn"><i data-lucide="download"></i> CSV de exemplo</button>
+        <button class="btn ghost" id="downloadSamplePdfBtn"><i data-lucide="file-down"></i> PDF de exemplo</button>
+        <button class="btn ghost" id="backBtn" hidden><i data-lucide="layout-dashboard"></i> Voltar ao painel</button>
+      </div>
+
+      <div class="features">
+        <article class="card feature reveal" style="--i:5">
+          <span class="f-ic" style="--c:var(--green-2)"><i data-lucide="tags"></i></span>
+          <h4>Categorização automática</h4>
+          <p>Reconhece centenas de estabelecimentos e aprende com cada correção que você faz.</p>
+        </article>
+        <article class="card feature reveal" style="--i:6">
+          <span class="f-ic" style="--c:var(--gold)"><i data-lucide="lightbulb"></i></span>
+          <h4>Insights com valor real</h4>
+          <p>Assinaturas esquecidas, gastos formiga, juros e picos — cada dica com a economia estimada.</p>
+        </article>
+        <article class="card feature reveal" style="--i:7">
+          <span class="f-ic" style="--c:var(--blue)"><i data-lucide="activity"></i></span>
+          <h4>Score de saúde financeira</h4>
+          <p>Uma nota de 0 a 100 baseada na sua taxa de poupança e na regra 50/30/20.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ LOADING ============ -->
+    <section id="loadingView" class="view">
+      <div class="loader">
+        <div class="ring"></div>
+        <ul class="steps">
+          <li>Lendo o arquivo</li>
+          <li>Categorizando transações</li>
+          <li>Gerando insights</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ DASHBOARD ============ -->
+    <section id="dashView" class="view">
+      <div class="dash">
+        <div class="dash-head reveal">
+          <div>
+            <h2>Seu panorama financeiro</h2>
+            <p id="dashSub">—</p>
+          </div>
+        </div>
+
+        <div class="kpis">
+          <article class="card kpi reveal" style="--i:1;--c:var(--green-2)">
+            <div class="kpi-top"><span class="kpi-ic"><i data-lucide="arrow-down-left"></i></span>Receitas</div>
+            <div class="kpi-val" id="kpiIncome">R$ 0,00</div>
+            <div class="kpi-sub" id="kpiIncomeSub"></div>
+          </article>
+          <article class="card kpi reveal" style="--i:2;--c:var(--red)">
+            <div class="kpi-top"><span class="kpi-ic"><i data-lucide="arrow-up-right"></i></span>Despesas</div>
+            <div class="kpi-val" id="kpiExpense">R$ 0,00</div>
+            <div class="kpi-sub" id="kpiExpenseSub"></div>
+          </article>
+          <article class="card kpi reveal" style="--i:3;--c:var(--gold)">
+            <div class="kpi-top"><span class="kpi-ic"><i data-lucide="wallet"></i></span>Saldo do período</div>
+            <div class="kpi-val" id="kpiBalance">R$ 0,00</div>
+            <div class="kpi-sub" id="kpiBalanceSub"></div>
+          </article>
+          <article class="card kpi reveal" style="--i:4;--c:var(--blue)">
+            <div class="kpi-top"><span class="kpi-ic"><i data-lucide="piggy-bank"></i></span>Taxa de poupança</div>
+            <div class="kpi-val" id="kpiRate">0%</div>
+            <div class="meter" title="Meta: 20%"><span id="rateMeter"></span><i style="left:50%"></i></div>
+            <div class="kpi-sub">meta saudável: 20% da renda</div>
+          </article>
+        </div>
+
+        <div class="row r-a">
+          <article class="card score-card reveal" style="--i:5">
+            <div class="card-head"><h3><i data-lucide="activity"></i> Saúde financeira</h3><span class="tag" id="scoreLabel">—</span></div>
+            <div class="gauge-wrap">
+              <svg class="gauge" viewBox="0 0 120 120" aria-hidden="true">
+                <circle class="g-track" cx="60" cy="60" r="52"></circle>
+                <circle class="g-arc" id="gaugeArc" cx="60" cy="60" r="52"></circle>
+              </svg>
+              <div class="gauge-center"><b id="scoreVal">0</b><span>de 100</span></div>
+            </div>
+            <div class="rule">
+              <div class="rule-row"><span>Necessidades</span><div class="rbar"><span id="rNeeds"></span><i style="left:50%"></i></div><b id="rNeedsV">—</b></div>
+              <div class="rule-row"><span>Desejos</span><div class="rbar"><span id="rWants"></span><i style="left:30%"></i></div><b id="rWantsV">—</b></div>
+              <div class="rule-row"><span>Poupança</span><div class="rbar"><span id="rSave"></span><i style="left:20%"></i></div><b id="rSaveV">—</b></div>
+              <p class="rule-note">Regra 50/30/20 · marcas indicam o ideal</p>
+            </div>
+          </article>
+
+          <article class="card reveal" style="--i:6">
+            <div class="card-head"><h3><i data-lucide="chart-column"></i> Evolução mensal</h3><span class="muted small">receitas × despesas × investido</span></div>
+            <div class="chart-box h320"><canvas id="barChart"></canvas></div>
+          </article>
+        </div>
+
+        <div class="row r-b">
+          <article class="card reveal" style="--i:7">
+            <div class="card-head"><h3><i data-lucide="chart-pie"></i> Para onde foi o dinheiro</h3><span class="muted small">clique para filtrar</span></div>
+            <div class="donut-layout">
+              <div class="donut-box">
+                <canvas id="donutChart"></canvas>
+                <div class="donut-center"><span>Despesas</span><b id="donutTotal">R$ 0</b></div>
+              </div>
+              <div class="cat-list" id="catList"></div>
+            </div>
+          </article>
+
+          <article class="card insights-card reveal" style="--i:8">
+            <div class="card-head"><h3><i data-lucide="sparkles"></i> Insights inteligentes</h3><span class="muted small" id="insCount"></span></div>
+            <div class="savings-banner">
+              <div><span>Potencial de economia</span><b id="savingsVal">R$ 0</b><small>/mês</small></div>
+              <div class="yearly" id="savingsYear">—</div>
+            </div>
+            <div class="insights" id="insightsList"></div>
+          </article>
+        </div>
+
+        <article class="card reveal" style="--i:9">
+          <div class="card-head"><h3><i data-lucide="chart-line"></i> Fluxo acumulado</h3><span class="muted small">saldo dia a dia no período</span></div>
+          <div class="chart-box h260"><canvas id="lineChart"></canvas></div>
+        </article>
+
+        <article class="card tx-card reveal" style="--i:10" id="txCard">
+          <div class="card-head wrap">
+            <h3><i data-lucide="list"></i> Transações <span class="count" id="txCount"></span></h3>
+            <div class="tx-tools">
+              <label class="search"><i data-lucide="search"></i><input id="searchInput" type="search" placeholder="Buscar descrição ou categoria…" autocomplete="off"></label>
+              <select id="catFilter" class="select" aria-label="Filtrar categoria"></select>
+            </div>
+          </div>
+          <div class="tx-list" id="txList"></div>
+          <button class="btn ghost more" id="moreBtn" hidden><i data-lucide="chevrons-down"></i> Mostrar mais</button>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <div id="catMenu" class="cat-menu" hidden></div>
+  <div id="toasts" aria-live="polite"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <script src="js/parser.js"></script>
+  <script src="js/pdfreader.js"></script>
+  <script src="js/report.js"></script>
+  <script src="js/categorizer.js"></script>
+  <script src="js/insights.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/sample.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
